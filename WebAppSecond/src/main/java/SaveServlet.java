@@ -24,6 +24,7 @@ public class SaveServlet extends HttpServlet {
 		    IOException{
 		        
 		      
+		        String userid = request.getParameter("userid");
 		        String title = request.getParameter("title");
 		        String content = request.getParameter("content");
 		        String priority = request.getParameter("priority");
@@ -36,14 +37,16 @@ public class SaveServlet extends HttpServlet {
 		        } catch(Exception e){
 		            e.printStackTrace();
 		        }
-		        String sql ="INSERT INTO task (title, content, priority, created_time) VALUES (?, ?, ?, current_timestamp)";
+		        String sql ="INSERT INTO task (userid, title, content, priority, created_time) VALUES (?, ?, ?, ?, current_timestamp)";
 		        try (Connection connection = DriverManager.getConnection
 		        (url, user, password);
 		        PreparedStatement statement = connection.prepareStatement
 		        (sql)){
-		        	    statement.setString(1, title);
-		        	    statement.setString(2, content);
-		        	    statement.setString(3, priority);
+		        	    
+		        	    statement.setString(1, userid);
+		        	    statement.setString(2, title);
+		        	    statement.setString(3, content);
+		        	    statement.setString(4, priority);
 		        	   
 		                int number = statement.executeUpdate();
 		                request.setAttribute("message", "タイトル:" + title + "の新規作成ができました");

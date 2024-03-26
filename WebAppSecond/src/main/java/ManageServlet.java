@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -44,50 +43,57 @@ public class ManageServlet extends HttpServlet {
 		        
 		        if (Objects.equals(sorted, "1")) {
 		              sql ="select \r\n"
-			        		+ "	*,\r\n"
-			        		+ "	case priority\r\n"
-			        		+ "		when \"1\" then \"High\"\r\n"
-			        		+ "		when \"2\" then \"Middle\"\r\n"
-			        		+ "		when \"3\" then \"Low\" \r\n"
-			        		+ "	end as priority_name\r\n"
-			        		+ "from task t \r\n"
-			        		+ "order by priority";
+		            		  + "	*,\r\n"
+		            		  + "	case priority\r\n"
+		            		  + "		when \"1\" then \"High\"\r\n"
+		            		  + "		when \"2\" then \"Middle\"\r\n"
+		            		  + "		when \"3\" then \"Low\" \r\n"
+		            		  + "	end as priority_name\r\n"
+		            		  + "from task t \r\n"
+		            		  + "where userid = ?\r\n"
+		            		  + "order by priority";
 		        } else if (Objects.equals(sorted, "2")) {
 		        	  sql ="select \r\n"
-			        		+ "	*,\r\n"
-			        		+ "	case priority\r\n"
-			        		+ "		when \"1\" then \"High\"\r\n"
-			        		+ "		when \"2\" then \"Middle\"\r\n"
-			        		+ "		when \"3\" then \"Low\" \r\n"
-			        		+ "	end as priority_name\r\n"
-			        		+ "from task t \r\n"
-			        		+ "order by priority desc";
+		        			  + "	*,\r\n"
+		        			  + "	case priority\r\n"
+		        			  + "		when \"1\" then \"High\"\r\n"
+		        			  + "		when \"2\" then \"Middle\"\r\n"
+		        			  + "		when \"3\" then \"Low\" \r\n"
+		        			  + "	end as priority_name\r\n"
+		        			  + "from task t \r\n"
+		        			  + "where userid = ?\r\n"
+		        			  + "order by priority desc";
 		        } else if (Objects.equals(sorted, "3")) {
 		        	  sql ="select \r\n"
-			        		+ "	*,\r\n"
-			        		+ "	case priority\r\n"
-			        		+ "		when \"1\" then \"High\"\r\n"
-			        		+ "		when \"2\" then \"Middle\"\r\n"
-			        		+ "		when \"3\" then \"Low\" \r\n"
-			        		+ "	end as priority_name\r\n"
-			        		+ "from task t";
+		        			  + "	*,\r\n"
+		        			  + "	case priority\r\n"
+		        			  + "		when \"1\" then \"High\"\r\n"
+		        			  + "		when \"2\" then \"Middle\"\r\n"
+		        			  + "		when \"3\" then \"Low\" \r\n"
+		        			  + "	end as priority_name\r\n"
+		        			  + "from task t \r\n"
+		        			  + "where userid = ?\r\n";
 		        } else {
 		        	  sql ="select \r\n"
-			        		+ "	*,\r\n"
-			        		+ "	case priority\r\n"
-			        		+ "		when \"1\" then \"High\"\r\n"
-			        		+ "		when \"2\" then \"Middle\"\r\n"
-			        		+ "		when \"3\" then \"Low\" \r\n"
-			        		+ "	end as priority_name\r\n"
-			        		+ "from task t \r\n"
-			        		+ "order by created_time desc";
+		        			  + "	*,\r\n"
+		        			  + "	case priority\r\n"
+		        			  + "		when \"1\" then \"High\"\r\n"
+		        			  + "		when \"2\" then \"Middle\"\r\n"
+		        			  + "		when \"3\" then \"Low\" \r\n"
+		        			  + "	end as priority_name\r\n"
+		        			  + "from task t \r\n"
+		        			  + "where userid = ?\r\n"
+		        	          + "order by created_time desc";
 		        }
-		 		       
-		        
+		          
+		          HttpSession session = request.getSession();     
+		          String userid = (String) session.getAttribute("userid");
+		          
 		        try (Connection connection = DriverManager.getConnection
 		        (url, user, password);
-		        PreparedStatement statement = connection.prepareStatement(sql);
-		        ResultSet results = statement.executeQuery()) {
+		        PreparedStatement statement = connection.prepareStatement(sql)){
+		        		statement.setString(1, userid);
+		        	ResultSet results = statement.executeQuery();
 		                ArrayList<HashMap<String,String>> rows =new
 		                ArrayList<HashMap<String,String>>();
 		                while(results.next()){
@@ -95,6 +101,7 @@ public class ManageServlet extends HttpServlet {
 		                    HashMap<String,String>();
 		                    String id=results.getString("id");
 		                    columns.put("id", id);
+		                    columns.put("userid", userid);
 		                    String title=results.getString("title");
 		                    columns.put("title", title);
 		                    String content=results.getString("content");
@@ -107,8 +114,8 @@ public class ManageServlet extends HttpServlet {
 		                    rows.add(columns);
 		                }
 		                
-		                HttpSession session = request.getSession();
 		                session.setAttribute("rows",rows);
+		                
 		        }   catch(SQLException e){
 		            e.printStackTrace();
 		        }
@@ -116,8 +123,13 @@ public class ManageServlet extends HttpServlet {
 		            request.setAttribute("message", "Exception" + e.getMessage());
 		        }
 		        
-		        String view="WEB-INF/view/manage.jsp";
-		        RequestDispatcher dispatcher= request .getRequestDispatcher(view);
-		        dispatcher.forward(request, response);
-		    }
+		        if (userid != null) {
+		            request.setAttribute("userid", userid);
+		            String view = "/WEB-INF/view/manage.jsp";
+		            request.getRequestDispatcher(view).forward(request, response);
+		        } else {
+		            // 未ログインの場合、ログイン画面に遷移
+		            response.sendRedirect("LoginServlet");
+		        }
+	  } 
 }

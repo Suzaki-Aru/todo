@@ -14,8 +14,6 @@ contentType="text/html; charset=UTF-8"
 <body>
     <h1>Todo詳細</h1>
     
-    <%= session.getAttribute("row") %>
-    
     <p><strong>タイトル：</strong><%= request.getAttribute("title") %></p>
     <p><strong>本文：</strong><%= request.getAttribute("content") %></p><br>
     <p><strong>優先度：</strong><%= request.getAttribute("priority_name") %></p><br>

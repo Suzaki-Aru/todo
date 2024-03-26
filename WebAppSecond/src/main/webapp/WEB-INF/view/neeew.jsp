@@ -25,14 +25,17 @@ li {
 	<h1>Todo新規作成</h1>
 
 	<form action="SaveServlet" method="get">
+		<label for="userid">あなたのID</label><br> 
+		<input type="text" name="userid" value=''><br><br>
 		<label for="title">タイトル</label><br> 
-		<input type="text" name="title" value=''><br> 
+		<input type="text" name="title" value=''><br><br>
+		<label for="title">優先度</label><br> 
 		<select name="priority" value="" id="priority">
 			<option value="1">High</option>
 			<option value="2">Middle</option>
 			<option value="3">Low</option>
 		</select> 
-		<br>
+		<br><br>
 		<label for="content">本文</label><br>
 		<textarea name="content" id="" cols="30" rows="10"></textarea>
 		<p></p>
@@ -44,6 +47,5 @@ li {
 				<a href='ManageServlet'>戻る</a>
 			</p></li>
 	</ul>
-<script src ="neeew.js"></script>
 </body>
 </html>

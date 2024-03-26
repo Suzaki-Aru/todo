@@ -11,7 +11,7 @@ contentType="text/html; charset=UTF-8"
   <title>Todoリスト</title>
 </head>
 <body>
-    <h1>Todoリスト</h1>
+    <h1>UserID:<%= session.getAttribute("userid") %>さんのTodoリスト</h1>
     
     <form action="ManageServlet" method="get">
     <select name="sort" value="" id="sort">
@@ -43,7 +43,10 @@ contentType="text/html; charset=UTF-8"
     </form>
    
     <% } %>
-    <p><a href="NewServlet">新規作成</a></p>
+    <p><a href="NewServlet">新規作成</a></p><br><br>
+    <form method="POST" action="LogoutServlet">
+      <input type="submit" value="Logout">
+    </form>
 <script src ="manage.js"></script>   
 </body>
 </html>
